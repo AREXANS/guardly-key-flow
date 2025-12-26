@@ -8,7 +8,10 @@ interface LuaScriptConfig {
   scriptName: string;
 }
 
-export const generateLuaLoader = (config: LuaScriptConfig): string => {
+export const generateLuaLoader = (config: LuaScriptConfig, baseUrl?: string): string => {
+  const siteUrl = baseUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://yoursite.com');
+  const getKeyUrl = config.linkCheckpoint || `${siteUrl}/getkey`;
+  
   return `--[[
     ScriptShield Protected Script
     Generated: ${new Date().toISOString()}
@@ -25,9 +28,9 @@ local CONFIG = {
     ExpirationHours = ${config.expirationHours},
     HWIDLock = ${config.hwidLock},
     MaxUsages = ${config.maxUsages},
-    LinkCheckpoint = "${config.linkCheckpoint || 'https://example.com/getkey'}",
+    LinkCheckpoint = "${getKeyUrl}",
     WebhookURL = "${config.webhookUrl || ''}",
-    VerifyEndpoint = "https://your-api.com/api/verify", -- Replace with your API
+    VerifyEndpoint = "${siteUrl}/api/verify",
 }
 
 -- Services
